@@ -56,6 +56,14 @@ This tool helps you calculate the homography matrix that maps points from one ca
 pip install opencv-python numpy pillow
 ```
 
+## Usage
+1. Clone the repository:
+   ```bash
+    git clone https://github.com/MlLearnerAkash/camera_calib.git
+    cd camera_calib
+    python camera_calib.py
+    ```
+2. **It will open a Tkniter application**
 ### References
 - OpenCV Documentation: [https://docs.opencv.org/](https://docs.opencv.org/)
 - Zhang, Z. (2000). A flexible new technique for camera calibration. 
@@ -73,7 +81,7 @@ If you use this tool in your research, please cite the following:
   year = {2025},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{}}
+  howpublished = {\url{https://github.com/MlLearnerAkash/camera_calib.git}}
 
 }
 ```
