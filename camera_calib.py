@@ -6,9 +6,12 @@ from PIL import Image, ImageTk
 import threading
 import time
 import os
+from PIL import Image
+
+from st_camera_handler import StCameraHandler, cleanup_st
 
 class HomographyApp:
-    def __init__(self, root):
+    def __init__(self, root, use_stapi):
         self.root = root
         self.root.title("Linux Homography Calibration Tool")
         self.root.geometry("1200x800")
@@ -25,6 +28,9 @@ class HomographyApp:
         self.img_points1_list = [] # 2D points in image plane 1
         self.img_points2_list = [] # 2D points in image plane 2
         
+        #Use StApi
+        self.use_stapi = use_stapi
+
         self.cam1_idx = 0
         self.cam2_idx = 2 # Usually 0 is laptop cam, 2 is external on Linux often, or 0 and 1
         self.cap1 = None
@@ -136,15 +142,27 @@ class HomographyApp:
         self.btn_calc.pack(side=tk.RIGHT, padx=20)
 
         # Start Streams
-        self.cap1 = cv2.VideoCapture(self.cam1_idx)
-        self.cap2 = cv2.VideoCapture(self.cam2_idx)
-        
-        if not self.cap1.isOpened() or not self.cap2.isOpened():
-            messagebox.showerror("Error", "Could not open one or both cameras.")
-            return
+        # Start Streams using StApi or OpenCV
+        try:
+            if self.use_stapi:
+                print(f"Initializing Camera 1 (index {self.cam1_idx})...")
+                self.cap1 = StCameraHandler(self.cam1_idx)
+                
+                print(f"Initializing Camera 2 (index {self.cam2_idx})...")
+                self.cap2 = StCameraHandler(self.cam2_idx)
+            else:
+                self.cap1 = cv2.VideoCapture(self.cam1_idx)
+                self.cap2 = cv2.VideoCapture(self.cam2_idx)
+            
+            if not self.cap1.isOpened() or not self.cap2.isOpened():
+                messagebox.showerror("Error", "Could not open one or both cameras.")
+                return
 
-        self.is_streaming = True
-        self.update_streams()
+            self.is_streaming = True
+            self.update_streams()
+        except Exception as e:
+            messagebox.showerror("Error", f"Camera initialization failed: {str(e)}")
+
 
     def update_streams(self):
         if not self.is_streaming:
@@ -156,16 +174,15 @@ class HomographyApp:
         if ret1 and ret2:
             self.current_frame1 = frame1
             self.current_frame2 = frame2
-            
             # Resize for display
+            print(">>>>", type(frame1))
             disp1 = self.convert_cv_to_tk(frame1)
             disp2 = self.convert_cv_to_tk(frame2)
-            
             self.lbl_cam1.configure(image=disp1)
             self.lbl_cam1.image = disp1
             self.lbl_cam2.configure(image=disp2)
             self.lbl_cam2.image = disp2
-        
+            print(">>>>>")
         self.root.after(20, self.update_streams)
 
     def capture_frame(self):
@@ -430,5 +447,7 @@ class HomographyApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = HomographyApp(root)
+    use_stapi_cameras = True
+    app = HomographyApp(root, use_stapi=use_stapi_cameras)
+    
     root.mainloop()
