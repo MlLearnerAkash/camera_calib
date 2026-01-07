@@ -21,7 +21,6 @@ def _initialize_st_once():
         
         # Create system for camera discovery
         _st_system = st.create_system()
-        
         # Discover ALL available cameras
         print("Discovering cameras...")
         while True:
@@ -145,3 +144,7 @@ def cleanup_st():
         print("✓ StApi cleaned up")
     except Exception as e:
         print(f"Error cleaning up StApi: {e}")
+
+
+if __name__ == "__main__":
+    _initialize_st_once()
