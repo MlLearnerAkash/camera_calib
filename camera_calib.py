@@ -22,7 +22,7 @@ class HomographyApp:
         
         # State Variables
         self.mode = None # 'online' or 'offline'
-        self.board_size = (9, 6) # Internal corners (columns, rows)
+        self.board_size = (9, 7) # Internal corners (columns, rows)
         self.captures = [] # List of tuples (img1, img2)
         self.obj_points_list = [] # 3D points in real world space
         self.img_points1_list = [] # 2D points in image plane 1
@@ -401,8 +401,18 @@ class HomographyApp:
         txt.pack(padx=20, pady=20)
         txt.insert(tk.END, str(self.H))
         
-        # Save Button
-        ttk.Button(self.main_container, text="Save Matrix to File", command=self.save_matrix).pack(pady=10)
+        # # Save Button
+        
+        # ttk.Button(self.main_container, text="Save Matrix to File", command=self.save_matrix).pack(pady=10)
+        # Tab-4: save the calibration matrix
+        tab_save = ttk.Frame(tabs)
+        tabs.add(tab_save, text="Save Matrix")
+        
+        save_frame = ttk.Frame(tab_save)
+        save_frame.pack(padx=20, pady=40)
+        
+        ttk.Label(save_frame, text="Save the homography matrix to file", font=("Helvetica", 12)).pack(pady=20)
+        ttk.Button(save_frame, text="Save Matrix to File", command=self.save_matrix).pack(pady=10)
 
     # ---------------- UTILS ----------------
     def display_image_in_frame(self, frame, cv_img, title):
